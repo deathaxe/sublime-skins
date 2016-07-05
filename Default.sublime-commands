@@ -1,0 +1,14 @@
+[
+    {
+        "caption": "Select Skin",
+        "command": "set_skin"
+    },
+    {
+        "caption": "Delete User Skin",
+        "command": "delete_user_skin"
+    },
+    {
+        "caption": "Save User Skin",
+        "command": "save_user_skin"
+    }
+]

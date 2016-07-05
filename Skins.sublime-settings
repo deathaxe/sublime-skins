@@ -1,0 +1,11 @@
+{
+	// A list of <PackageName>.sublime-settings and the structure of the
+	// settings to store from and apply to from a *.sublime-themepack
+	"skin-template":
+	{
+		"Preferences": ["color_scheme","theme","font_face","font_size"],
+		"SublimeLinter": {
+			"user": ["error_color","gutter_theme","warning_color"]
+		}
+	}
+}
