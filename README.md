@@ -36,15 +36,15 @@ By default only `color_scheme`, `theme`, `font_face` and `font_size` are stored 
 ```javascript
 {
 	// skin
-	"Monokai": {
-
+	"Boxy Tomorrow (Green)": {
 		// Packages/User/Preferences.sublime-settings
 		"Preferences": {
-			"color_scheme": "Packages/Color Scheme - Default/Monokai.tmTheme",
-			"theme": "Default.sublime-theme",
-			// ...
+			"color_scheme": "Packages/Boxy Theme/schemes/Boxy Tomorrow.tmTheme",
+			"theme": "Boxy Tomorrow.sublime-theme",
+			"theme_accent_green" : true,
+			"theme_accent_orange": null,
+			"theme_accent_purple": null
 		},
-
 		// Packages/User/SublimeLinter.sublime-settings
 		"SublimeLinter": {
 			"user": {
@@ -98,6 +98,6 @@ The following example will directly delete `Preset 01` from the `Packages/User/S
 - [Theme Menu Switcher][themeswitcher] by chmln
 - [QuickThemes][quickthemes] by chrislongo
 
-[home]:						<https://github.com/deathaxe/sublime-skins>
-[themeswitcher]:	<https://github.com/chmln/sublime-text-theme-switcher-menu>
-[quickthemes]:		<https://github.com/chrislongo/QuickThemes>
+[home]:							<https://github.com/deathaxe/sublime-skins>
+[themeswitcher]:		<https://github.com/chmln/sublime-text-theme-switcher-menu>
+[quickthemes]:			<https://github.com/chrislongo/QuickThemes>
