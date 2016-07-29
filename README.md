@@ -11,7 +11,7 @@ Open the `command pannel` with <kbd>Ctrl+Shift+P</kbd> and type `Select Skin`, `
 
 
 ### Settings
-By default only `color_scheme`, `theme`, `font_face` and `font_size` are stored by `Save User Skin`. If you want more settings to be saved, you can change the `skin-template` in the `Skins.sublime-settings`.
+By default only `color_scheme`, `theme`, `font_face` and `font_size` are stored by `Save User Skin`. If you want more settings to be stored, you can change the `skin-template` in the `Skins.sublime-settings`.
 
 **Example**
 
@@ -29,7 +29,7 @@ By default only `color_scheme`, `theme`, `font_face` and `font_size` are stored 
 
 ## Theme Developers
 ### General
-`Skins` parses all `<AnyName>.sublime-skins` files in all packages. They are expected to store a list of `skins` - a collection of settings for sublime text and other packages. More than one sublime-skins file can exist in a package. The name of the file does not matter, but the names of the skins inside must be unique per package. The quick panel will show these names. The `Package` providing it is displayed in the second row as a kind of description.
+`Skins` parses all `<AnyName>.skins` files in all packages. They are expected to store a collection of settings for sublime text and other packages. More than one skins file can exist in a package. The name of the file does not matter, but the names of the skins inside must be unique per package. The quick panel will show these names. The `Package` providing it is displayed in the second row as a kind of description.
 
 ### File Format
 
@@ -78,7 +78,7 @@ Settings with `Null` value, are deleted in the sublime-settings files.
 
 #### Save User Skin
 
-The following example will directly save the current look and feel as `Preset 01` in the `Packages/User/Saved Skins.sublime-skins` file.
+The following example will directly save the current look and feel as `Preset 01` in the `Packages/User/Saved Skins.skins` file.
 
 ```javascript
 "command": "save_user_skin",
@@ -87,7 +87,7 @@ The following example will directly save the current look and feel as `Preset 01
 
 #### Delete User Skin
 
-The following example will directly delete `Preset 01` from the `Packages/User/Saved Skins.sublime-skins` file.
+The following example will directly delete `Preset 01` from the `Packages/User/Saved Skins.skins` file.
 
 ```javascript
 "command": "delete_user_skin",
