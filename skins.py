@@ -24,33 +24,61 @@ def is_skin_valid(skin_data):
     except:
         return False
 
-def load_skins(skins_file):
+def load_skin(pkg_name, skin_name):
     """
-    Open a <skins_file>.skins and read all valid skins from it.
-    """
-    return { name : obj
-        for name, obj in sublime.decode_value(
-            sublime.load_resource(skins_file)).items()
-        if is_skin_valid(obj) }
+    Load a single skin from a Packages/<pkg_name>/*.skins
 
-def load_pkg_skins(pkg_name = None):
+    args:
+        pkg_name    - the package name to look for skin files in.
+        skin_name   - the name of the skin whose data to load.
+
+    returns:
+        skin    - tuble with all skin information
+                  skin[0] = package name
+                  skin[1] = skin name
+                  skin[2] = skin data
     """
-    Load all valid skins from all <name>.skins of the package <pkg_name>
-    If <pkg_name> is None, all skins from all packages are loaded.
-    """
-    items = {}
     for skins_file in sublime.find_resources("*.skins"):
-        if not pkg_name or pkg_name in skins_file:
-            for key, value in sublime.decode_value(sublime.load_resource(skins_file)).items():
-                if is_skin_valid(value):
-                    items[key] = value
-    return items
+        if pkg_name in skins_file:
+            data = sublime.decode_value(sublime.load_resource(skins_file))[skin_name]
+            if is_skin_valid(data):
+                return [pkg_name, skin_name, data]
+
+    return None
+
+def load_skins():
+    """
+    Generate a list of all valid skins from all packages.
+    Each skin is a tuble with following fields
+      skin[0] = package name
+      skin[1] = skin name
+      skin[2] = skin data
+    """
+    for skins_file in sublime.find_resources("*.skins"):
+        try:
+            pkg_name = skins_file.split("/")[1]
+            for skin_name, data in sublime.decode_value(sublime.load_resource(skins_file)).items():
+                if is_skin_valid(data):
+                    yield [pkg_name, skin_name, data]
+
+        except:
+            sublime.status_message("Parse error in " + skins_file)
+
+    return None
 
 def load_user_skins():
     """
     Open the "Saved Skins.skins" and read all valid skins from it.
     """
-    return load_skins("Packages/User/Saved Skins.skins")
+    try:
+        return { name : data
+            for name, data in sublime.decode_value(
+                sublime.load_resource("Packages/User/Saved Skins.skins")).items()
+            if is_skin_valid(data) }
+
+    except AttributeError:
+        # Return empty object on parse error
+        return {}
 
 def save_user_skins(skins):
     """
@@ -84,34 +112,40 @@ class SetSkinCommand(sublime_plugin.WindowCommand):
 
         if package and name:
             try:
-                self.apply_settings([name, package], load_pkg_skins(package)[name])
+                self.apply_settings(load_skin(package, name))
             except:
                 sublime.status_message("Can't switch to invalid skin!")
         else:
             current_skin = self.settings.get("skin")
             selected_index = -1
             idx = 0
-            skin_names = []
-            skin_data = []
 
-            for skins_file in sublime.find_resources("*.skins"):
-                pkg = skins_file.split("/")[1]
-                for name, data in sublime.decode_value(sublime.load_resource(skins_file)).items():
-                    if is_skin_valid(data):
-                        skin_names.append([name, pkg])
-                        skin_data.append(data)
-                        if current_skin == pkg + "/" + name:
-                            selected_index = idx
-                        idx += 1
+            skins = []
+            for pkg, name, data in load_skins():
+                skins.append([pkg, name, data])
+                if current_skin == pkg + "/" + name:
+                    selected_index = idx
+                idx += 1
 
             self.changeset = {}
             self.window.show_quick_panel(
-                items = skin_names,
+                items = [ [ skin[1], skin[0] ] for skin in skins ],
                 selected_index = selected_index,
-                on_select = lambda x: self.on_select(skin_names[x], skin_data[x], x < 0),
-                on_highlight = lambda x: self.on_highlight(skin_data[x]))
+                on_select = lambda x: self.on_select(skins[x], x < 0),
+                on_highlight = lambda x: self.on_highlight(skins[x]))
 
-    def on_select(self, skin_name, skin_data, abort):
+
+    def on_select(self, skin, abort):
+        """
+        On select event handler for quick panel.
+
+        args:
+            skin    - tuble with all skin information
+                      skin[0] = package name
+                      skin[1] = skin name
+                      skin[2] = skin data
+            abort   - TRUE to restore old settings.
+        """
         if abort:
             for key, val in self.changeset.items():
                 if val:
@@ -122,13 +156,19 @@ class SetSkinCommand(sublime_plugin.WindowCommand):
             sublime.save_settings("Preferences.sublime-settings")
 
         else:
-            self.apply_settings(skin_name, skin_data)
+            self.apply_settings(skin)
 
-    def on_highlight(self, skin_data):
+    def on_highlight(self, skin):
         """
         Preview the theme and color scheme as soon as a skin is highlighted.
+
+        args:
+            skin    - tuble with all skin information
+                      skin[0] = package name
+                      skin[1] = skin name
+                      skin[2] = skin data
         """
-        for key, val in skin_data["Preferences"].items():
+        for key, val in skin[2]["Preferences"].items():
             # backup settings before changing the first time
             if not key in self.changeset:
                 self.changeset[key] = self.settings.get(key)
@@ -138,12 +178,18 @@ class SetSkinCommand(sublime_plugin.WindowCommand):
             else:
                 self.settings.erase(key)
 
-    def apply_settings(self, skin_name, skin_data):
+    def apply_settings(self, skin):
         """
         Apply all settings
+
+        args:
+            skin    - tuble with all skin information
+                      skin[0] = package name
+                      skin[1] = skin name
+                      skin[2] = skin data
         """
-        self.settings.set("skin", skin_name[1] + "/" + skin_name[0])
-        for pkg_name, skns in skin_data.items():
+        self.settings.set("skin", skin[0] + "/" + skin[1])
+        for pkg_name, skns in skin[2].items():
             try:
                 pkgs = sublime.load_settings(pkg_name + ".sublime-settings")
                 for key, val in skns.items():
