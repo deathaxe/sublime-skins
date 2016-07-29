@@ -1,13 +1,13 @@
 # [Skins][home]
-[![The MIT License](https://img.shields.io/badge/license-MIT-orange.svg?style=flat-square)](http://opensource.org/licenses/MIT)
+[![The MIT License](https://img.shields.io/badge/license-MIT-orange.svg?style=flat-square)](LICENSE)
 
-With **Skins** users can change the theme and color scheme of **Sublime Text** together with only one command. A skin is nothing else but a collection of settings appied to Sublime Text, if a skin is selected. Skins can be provided in theme packages such as _Boxy Theme_ or they can be created by users themeselfs by saving the current settings as a _User Skin_ of any name.
+With **Skins** users can change the theme and colour scheme of **Sublime Text** together with only one command. A skin is nothing else but a collection of settings applied to Sublime Text, if a skin is selected. Skins can be provided in theme packages such as _Boxy Theme_ or they can be created by users themselves by saving the current settings as a _User Skin_ of any name.
 
 ![scr](screenshot.gif)
 
 ## End Users
 ### General Usage
-Open the `command pannel` with <kbd>Ctrl+Shift+P</kbd> and type `Select Skin`, `Save User Skin` or `Delete User Skin`.
+Open the `command panel` with <kbd>Ctrl+Shift+P</kbd> and type `Select Skin`, `Save User Skin` or `Delete User Skin`.
 
 
 ### Settings
@@ -67,7 +67,7 @@ Each child node of a skin represents a `<NodeName>.sublime-settings` file with a
 Settings with `Null` value, are deleted in the sublime-settings files.
 
 ### Commands
-`Skins` exports the following `commands` to directly interact with all available skins. They can be used to create key bindings or command shortcuts to the most frequent used skins.
+`Skins` exports the following `commands` to directly interact with all available skins. They can be used to create key bindings or command short-cuts to the most frequent used skins.
 
 #### Set Skin
 
