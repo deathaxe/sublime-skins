@@ -76,8 +76,7 @@ def load_user_skins():
                 sublime.load_resource("Packages/User/Saved Skins.skins")).items()
             if is_skin_valid(data) }
 
-    except AttributeError:
-        # Return empty object on parse error
+    except:
         return {}
 
 def save_user_skins(skins):
