@@ -1,6 +1,6 @@
 # [Skins][home]
 [![The MIT License](https://img.shields.io/badge/license-MIT-orange.svg?style=flat-square)](LICENSE)
-[![Package Control](https://packagecontrol.herokuapp.com/downloads/skins.svg?style=flat-square)](https://packagecontrol.io/packages/skins)
+[![Package Control](https://packagecontrol.herokuapp.com/downloads/Skins.svg?style=flat-square)](https://packagecontrol.io/packages/skins)
 
 With **Skins** users can change the theme and colour scheme of **Sublime Text** together with only one command. A skin is nothing else but a collection of settings applied to Sublime Text, if a skin is selected. Skins can be provided in theme packages such as _Boxy Theme_ or they can be created by users themselves by saving the current settings as a _User Skin_ of any name.
 
