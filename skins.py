@@ -1,13 +1,8 @@
 import sublime
 import sublime_plugin
 import os
-import json
+import codecs
 
-def absolute_user_path():
-    """
-    Return absolute path of the Packages/User
-    """
-    return sublime.packages_path() + os.sep + "User" + os.sep
 
 def is_skin_valid(skin_data):
     """
@@ -23,6 +18,7 @@ def is_skin_valid(skin_data):
         return True
     except:
         return False
+
 
 def load_skin(pkg_name, skin_name):
     """
@@ -46,6 +42,7 @@ def load_skin(pkg_name, skin_name):
 
     return None
 
+
 def load_skins():
     """
     Generate a list of all valid skins from all packages.
@@ -66,6 +63,7 @@ def load_skins():
 
     return None
 
+
 def load_user_skins():
     """
     Open the "Saved Skins.skins" and read all valid skins from it.
@@ -79,11 +77,16 @@ def load_user_skins():
     except:
         return {}
 
+
 def save_user_skins(skins):
     """
     Save the skins to the "Saved Skins.skins".
     """
-    with open(absolute_user_path() + "Saved Skins.skins", "w") as f:
+    user_skins_file = os.path.join(sublime.packages_path(),
+                                   "User",
+                                   "Saved Skins.skins")
+
+    with codecs.open(user_skins_file, "w", "utf-8") as f:
         f.write(sublime.encode_value(skins, True))
 
 
@@ -227,21 +230,36 @@ class DeleteUserSkinCommand(sublime_plugin.WindowCommand):
 class SaveUserSkinCommand(sublime_plugin.WindowCommand):
 
     def run(self, name = None):
-        if name:
-            template = sublime.load_settings("Skins.sublime-settings").get("skin-template")
-            skins = load_user_skins()
-            # BUG: sublime.load_setting(...) does not work reliably here, I don't know why.
-            #      cascaded settings are sometimes read as Null-Value, so use JSON library.
-            skin = {}
-            for pkg, css in template.items():
-                with open(absolute_user_path() + pkg + ".sublime-settings") as f:
-                    pkgs = self.transform(json.load(f), css)
-                    if pkgs:
-                       skin[pkg] = pkgs
 
-            skins[name] = skin
-            save_user_skins(skins)
-            sublime.status_message("Saved skin " + name)
+        if name:
+            # Compose the new skin by loading all settings from all existing
+            # <pkg>.sublime-settings files defined in <template>.
+            new_skin = {}
+            template = sublime.load_settings("Skins.sublime-settings").get("skin-template")
+            for pkg, css in template.items():
+
+                try:
+                    new_skin[pkg] = self.transform(sublime.decode_value(sublime.load_resource(
+                                                   "Packages/User/" + pkg + ".sublime-settings")),
+                                                   css)
+
+                # Ignore resource not found, plugin not installed?
+                except IOError:
+                    pass
+
+                except Exception as e:
+                    print("Loading skin settings from " + pkg + ".sublime-settings :", e)
+
+            # Save new skin only if minimum requirements are met
+            if is_skin_valid(new_skin):
+                skins = load_user_skins()
+                skins[name] = new_skin
+                save_user_skins(skins)
+                sublime.status_message("Saved skin " + name)
+
+            else:
+                sublime.status_message("Invalid skin " + name + " not saved!")
+
         else:
             self.window.show_input_panel("Enter skins name:", "",
                                          self.run, None, None)
