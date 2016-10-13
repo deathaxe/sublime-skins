@@ -10,6 +10,14 @@ With **Skins** users can change the theme and colour scheme of **Sublime Text** 
 ### General Usage
 Open the `command panel` with <kbd>Ctrl+Shift+P</kbd> and type `Select Skin`, `Save User Skin` or `Delete User Skin`.
 
+### Windows / Linux
+
+Use <kbd>Ctrl+F12</kbd> to quickly open the `Select Skin` panel
+
+### OS X
+
+Use <kbd>Super+F12</kbd> to quickly open the `Select Skin` panel
+
 
 ### Settings
 By default only `color_scheme`, `theme`, `font_face` and `font_size` are stored by `Save User Skin`. If you want more settings to be stored, you can change the `skin-template` in the `Skins.sublime-settings`.
