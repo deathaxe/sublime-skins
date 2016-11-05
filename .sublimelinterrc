@@ -8,7 +8,7 @@
             "max-line-length": 120
         },
         "pydocstyle": {
-            "ignore": ["D100"]
+            "add-ignore": "D100,D101,D202,D203"
         }
     }
 }
