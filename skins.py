@@ -275,7 +275,7 @@ class SaveUserSkinCommand(sublime_plugin.WindowCommand):
             template = sublime.load_settings(PREF_SKIN).get("skin-template")
             new_skin = {}
             for pkg_name, css in template.items():
-                val = SaveUserSkinCommand.transform(decode_resource(
+                val = self.transform(decode_resource(
                     "Packages/User/" + pkg_name + PREF_EXT), css)
                 # do not add empty objects
                 if val:
@@ -293,8 +293,8 @@ class SaveUserSkinCommand(sublime_plugin.WindowCommand):
             self.window.show_input_panel("Enter skins name:", "",
                                          self.run, None, None)
 
-    @staticmethod
-    def transform(json, css):
+    @classmethod
+    def transform(cls, json, css):
         """Filter JSON object by a stylesheet.
 
         This function transforms the <json> object by recursivly
@@ -319,7 +319,7 @@ class SaveUserSkinCommand(sublime_plugin.WindowCommand):
             if type(css) is dict:
                 node = {}
                 for key, ss in css.items():
-                    value = SaveUserSkinCommand.transform(json[key], ss)
+                    value = cls.transform(json[key], ss)
                     # do not add empty objects
                     if value:
                         node[key] = value
