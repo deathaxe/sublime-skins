@@ -1,6 +1,6 @@
-import sublime
-import sublime_plugin
 import os
+import sublime
+from sublime_plugin import WindowCommand
 
 PREF = "Preferences"
 PREF_EXT = ".sublime-settings"
@@ -104,7 +104,7 @@ def save_user_skins(skins):
         f.write(sublime.encode_value(skins, True))
 
 
-class SetSkinCommand(sublime_plugin.WindowCommand):
+class SetSkinCommand(WindowCommand):
     """Implements the 'set_skin' command."""
 
     def __init__(self, window):
@@ -214,7 +214,7 @@ class SetSkinCommand(sublime_plugin.WindowCommand):
                 pass
 
 
-class DeleteUserSkinCommand(sublime_plugin.WindowCommand):
+class DeleteUserSkinCommand(WindowCommand):
     """Implements the 'delete_user_skin' command."""
 
     def is_visible(self):
@@ -249,7 +249,7 @@ class DeleteUserSkinCommand(sublime_plugin.WindowCommand):
             sublime.status_message("Skin not deleted!")
 
 
-class SaveUserSkinCommand(sublime_plugin.WindowCommand):
+class SaveUserSkinCommand(WindowCommand):
     """Implements the 'save_user_skin' command."""
 
     def run(self, name=None):
