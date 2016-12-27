@@ -6,7 +6,9 @@ PREF = "Preferences"
 PREF_EXT = ".sublime-settings"
 PREF_USER = PREF + PREF_EXT
 PREF_SKIN = "Skins" + PREF_EXT
-SKIN_KEYS = ("color_scheme", "theme")
+# least required entries of a valid skin
+COLOR_SCHEME = "color_scheme"
+THEME = "theme"
 
 
 def decode_resource(name):
@@ -28,17 +30,37 @@ def decode_resource(name):
     return {}
 
 
-def is_skin_valid(skin_data):
+def validate_skin(skin_data):
     """Check skin integrety and return the boolean result.
 
     For a skin to be valid at least 'color_scheme' and 'theme' must exist.
     Otherwise SublimeText's behaviour when loading the skin is unpredictable.
 
+    SublimeLinter automatically creates and applies patched color schemes if
+    they doen't contain linter icon scopes. To ensure not to break this feature
+    this function ensures not to apply such a hacked color scheme directly so
+    SublimeLinter can do his job correctly.
+
     Arguments:
         skin_data - JSON object with all settings to apply for the skin.
     """
-    return bool(any(sublime.find_resources(os.path.basename(
-                skin_data[PREF][key]))) for key in SKIN_KEYS)
+    # check theme file
+    theme_name = os.path.basename(skin_data[PREF][THEME])
+    theme_ok = any(sublime.find_resources(theme_name))
+    # check color scheme
+    path, tail = os.path.split(skin_data[PREF][COLOR_SCHEME])
+    name = tail.replace(" (SL)", "")
+    color_schemes = sublime.find_resources(name)
+    if not color_schemes:
+        return False
+    # Try to find the exact path from *.skins file
+    resource_path = "%s/%s" % (path, name)
+    for found in color_schemes:
+        if found == resource_path:
+            return theme_ok
+    # Use the first found color scheme which matches 'name'
+    skin_data[PREF][COLOR_SCHEME] = color_schemes[0]
+    return theme_ok
 
 
 def load_skin(pkg_name, skin_name):
@@ -57,7 +79,7 @@ def load_skin(pkg_name, skin_name):
     for skins_file in sublime.find_resources("*.skins"):
         if pkg_name in skins_file:
             data = decode_resource(skins_file)[skin_name]
-            if is_skin_valid(data):
+            if validate_skin(data):
                 return (pkg_name, skin_name, data)
     return None
 
@@ -73,14 +95,14 @@ def load_skins():
     for skins_file in sublime.find_resources("*.skins"):
         pkg_name = skins_file.split("/")[1]
         for skin_name, data in decode_resource(skins_file).items():
-            if is_skin_valid(data):
+            if validate_skin(data):
                 yield (pkg_name, skin_name, data)
     return None
 
 
 def have_user_skins():
     """Check if 'Saved Skins.skins' contains at least one valid skin."""
-    return any(is_skin_valid(data) for data in decode_resource(
+    return any(validate_skin(data) for data in decode_resource(
                 "Packages/User/Saved Skins.skins").values())
 
 
@@ -89,7 +111,7 @@ def load_user_skins():
     return {name: data
             for name, data in decode_resource(
                 "Packages/User/Saved Skins.skins").items()
-            if is_skin_valid(data)}
+            if validate_skin(data)}
 
 
 def save_user_skins(skins):
@@ -280,7 +302,7 @@ class SaveUserSkinCommand(WindowCommand):
                     new_skin[pkg_name] = val
 
             # Save new skin only if minimum requirements are met
-            if is_skin_valid(new_skin):
+            if validate_skin(new_skin):
                 skins = load_user_skins()
                 skins[name] = new_skin
                 save_user_skins(skins)
