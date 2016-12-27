@@ -1,4 +1,4 @@
-import os
+import os.path
 import sublime
 from sublime_plugin import WindowCommand
 
@@ -12,7 +12,7 @@ SKIN_KEYS = ("color_scheme", "theme")
 def decode_resource(name):
     """Load and decode sublime text resource.
 
-    args:
+    Arguments:
         name    - Name of the resource file to load.
 
     retruns:
@@ -22,19 +22,19 @@ def decode_resource(name):
     try:
         return sublime.decode_value(sublime.load_resource(name)) or {}
     except Exception as e:
-        s = "Skins: loading " + name + " failed with: " + str(e)
-        sublime.status_message(s)
-        print(s)
+        message = "Skins: loading %s failed with %s" % (name, e)
+        sublime.status_message(message)
+        print(message)
     return {}
 
 
 def is_skin_valid(skin_data):
-    """Check skin validity.
+    """Check skin integrety and return the boolean result.
 
     For a skin to be valid at least 'color_scheme' and 'theme' must exist.
     Otherwise SublimeText's behaviour when loading the skin is unpredictable.
 
-    args:
+    Arguments:
         skin_data - JSON object with all settings to apply for the skin.
     """
     return bool(any(sublime.find_resources(os.path.basename(
@@ -44,7 +44,7 @@ def is_skin_valid(skin_data):
 def load_skin(pkg_name, skin_name):
     """Load a single skin from a Packages/<pkg_name>/*.skins.
 
-    args:
+    Arguments:
         pkg_name    - the package name to look for skin files in.
         skin_name   - the name of the skin whose data to load.
 
@@ -59,7 +59,6 @@ def load_skin(pkg_name, skin_name):
             data = decode_resource(skins_file)[skin_name]
             if is_skin_valid(data):
                 return (pkg_name, skin_name, data)
-
     return None
 
 
@@ -76,14 +75,13 @@ def load_skins():
         for skin_name, data in decode_resource(skins_file).items():
             if is_skin_valid(data):
                 yield (pkg_name, skin_name, data)
-
     return None
 
 
 def have_user_skins():
     """Check if 'Saved Skins.skins' contains at least one valid skin."""
-    return bool(any(is_skin_valid(data) for data in decode_resource(
-                "Packages/User/Saved Skins.skins").values()))
+    return any(is_skin_valid(data) for data in decode_resource(
+                "Packages/User/Saved Skins.skins").values())
 
 
 def load_user_skins():
@@ -96,12 +94,10 @@ def load_user_skins():
 
 def save_user_skins(skins):
     """Save the skins to the 'Saved Skins.skins'."""
-    user_skins_file = os.path.join(sublime.packages_path(),
-                                   "User",
-                                   "Saved Skins.skins")
-
-    with open(user_skins_file, "w", encoding="utf-8") as f:
-        f.write(sublime.encode_value(skins, True))
+    user_skins_file = os.path.join(
+        sublime.packages_path(), "User", "Saved Skins.skins")
+    with open(user_skins_file, "w", encoding="utf-8") as file:
+        file.write(sublime.encode_value(skins, True))
 
 
 class SetSkinCommand(WindowCommand):
@@ -123,7 +119,7 @@ class SetSkinCommand(WindowCommand):
         If at least one of the args is None, a quick panel with all
         available skins is displayed.
 
-        args:
+        Arguments:
             package   - name of the package providing the skin or (User)
             name      - name of the skin in the <skins>.skins file
         """
@@ -154,7 +150,7 @@ class SetSkinCommand(WindowCommand):
     def on_select(self, skin, abort):
         """On select event handler for quick panel.
 
-        args:
+        Arguments:
             skin    - tuble with all skin information
                       skin[0] = package name
                       skin[1] = skin name
@@ -174,7 +170,7 @@ class SetSkinCommand(WindowCommand):
     def on_highlight(self, skin):
         """Preview the theme and color scheme as soon as a skin is highlighted.
 
-        args:
+        Arguments:
             skin    - tuble with all skin information
                       skin[0] = package name
                       skin[1] = skin name
@@ -192,7 +188,7 @@ class SetSkinCommand(WindowCommand):
     def apply_settings(self, skin):
         """Apply all settings.
 
-        args:
+        Arguments:
             skin    - tuble with all skin information
                       skin[0] = package name
                       skin[1] = skin name
@@ -224,7 +220,7 @@ class DeleteUserSkinCommand(WindowCommand):
     def run(self, name=None):
         """Run the command 'delete_user_skin'.
 
-        args:
+        Arguments:
             name    If not None, this is names the skin to delete.
                     If None, show quick panel to select skin.
 
@@ -234,9 +230,10 @@ class DeleteUserSkinCommand(WindowCommand):
             if name:
                 self.delete(skins, name)
             else:
+                names = sorted(skins.keys())
                 self.window.show_quick_panel(
-                    items=[[skin, "User"] for skin in sorted(skins.keys())],
-                    on_select=lambda x: self.delete(skins, sorted(skins.keys())[x], x < 0))
+                    items=[[skin, "User"] for skin in names],
+                    on_select=lambda x: self.delete(skins, names[x], x < 0))
 
     @staticmethod
     def delete(skins, skin, abort=False):
@@ -244,9 +241,10 @@ class DeleteUserSkinCommand(WindowCommand):
         if not abort and skin in skins.keys():
             del skins[skin]
             save_user_skins(skins)
-            sublime.status_message("Skin " + skin + " deleted!")
+            message = "Skin %s deleted!" % skin
         else:
-            sublime.status_message("Skin not deleted!")
+            message = "Skin not deleted!"
+        sublime.status_message(message)
 
 
 class SaveUserSkinCommand(WindowCommand):
@@ -265,7 +263,7 @@ class SaveUserSkinCommand(WindowCommand):
 
             sublime.run_command("save_user_skin", {"name": "Preset 1"})
 
-        args:
+        Arguments:
             name    If not None this names the skin to save the current
                     visual settings as.
         """
@@ -276,7 +274,7 @@ class SaveUserSkinCommand(WindowCommand):
             new_skin = {}
             for pkg_name, css in template.items():
                 val = self.transform(decode_resource(
-                    "Packages/User/" + pkg_name + PREF_EXT), css)
+                    "Packages/User/%s.sublime-settings" % pkg_name), css)
                 # do not add empty objects
                 if val:
                     new_skin[pkg_name] = val
@@ -286,12 +284,13 @@ class SaveUserSkinCommand(WindowCommand):
                 skins = load_user_skins()
                 skins[name] = new_skin
                 save_user_skins(skins)
-                sublime.status_message("Saved skin " + name)
+                message = "Saved skin %s!" % name
             else:
-                sublime.status_message("Invalid skin " + name + " not saved!")
+                message = "Invalid skin %s not saved!" % name
+            sublime.status_message(message)
         else:
-            self.window.show_input_panel("Enter skins name:", "",
-                                         self.run, None, None)
+            self.window.show_input_panel(
+                "Enter skins name:", "", self.run, None, None)
 
     @classmethod
     def transform(cls, json, css):
@@ -301,7 +300,7 @@ class SaveUserSkinCommand(WindowCommand):
         parsing it and returning only the child objects whose keys
         match the values in the cascaded stylesheed <css>.
 
-        args:
+        Arguments:
             json    The data source to filter
             css     The stylesheet used as filter
 
