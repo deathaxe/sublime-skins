@@ -1,4 +1,10 @@
 {
+	"Monokai (Adaptive)": {
+		"Preferences": {
+			"color_scheme": "Packages/Color Scheme - Default/Monokai.tmTheme",
+			"theme": "Adaptive.sublime-theme"
+		}
+	},
 	"Monokai": {
 		"Preferences": {
 			"color_scheme": "Packages/Color Scheme - Default/Monokai.tmTheme",
