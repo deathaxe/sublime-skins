@@ -1,5 +1,6 @@
 [
 	{
-		"keys": ["super+f12"], "command": "set_skin"
+		"keys": [ "super+f12" ],
+		"command": "set_skin"
 	}
 ]

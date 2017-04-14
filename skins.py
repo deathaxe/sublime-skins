@@ -1,3 +1,4 @@
+# coding: utf-8
 import os.path
 import sublime
 from sublime_plugin import WindowCommand

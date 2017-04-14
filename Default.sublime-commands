@@ -1,14 +1,23 @@
 [
-    {
-        "caption": "Select Skin",
-        "command": "set_skin"
-    },
-    {
-        "caption": "Delete User Skin",
-        "command": "delete_user_skin"
-    },
-    {
-        "caption": "Save User Skin",
-        "command": "save_user_skin"
-    }
+	{
+		"caption": "UI: Select Skin",
+		"command": "set_skin"
+	},
+	{
+		"caption": "UI: Delete Skin",
+		"command": "delete_user_skin"
+	},
+	{
+		"caption": "UI: Save Skin",
+		"command": "save_user_skin"
+	},
+	{
+		"caption": "Preferences: Skins Settings",
+		"command": "edit_settings",
+		"args":
+		{
+			"base_file": "${packages}/Skins/Skins.sublime-settings",
+			"default": "{\n\t$0\n}\n"
+		}
+	}
 ]
