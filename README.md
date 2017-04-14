@@ -1,67 +1,76 @@
-# [Skins][home]
+# [Skins](https://github.com/deathaxe/sublime-skins)
 
-[![The MIT License](https://img.shields.io/badge/license-MIT-orange.svg?style=flat-square)](LICENSE)
-[![Package Control](https://packagecontrol.herokuapp.com/downloads/Skins.svg?style=flat-square)](https://packagecontrol.io/packages/Skins)
+[![License](https://img.shields.io/github/license/deathaxe/sublime-skins.svg?style=flat-square)](LICENSE)
+[![Package Control](https://img.shields.io/packagecontrol/dt/Skins.svg?style=flat-square)](https://packagecontrol.io/packages/Skins)
 
-With **Skins** users can change the theme and colour scheme of **Sublime Text**
-together with only one command. A skin is nothing else but a collection of
-settings applied to Sublime Text, if a skin is selected. Skins can be provided
-in theme packages such as _Boxy Theme_ or they can be created by users
-themselves by saving the current settings as a _User Skin_ of any name.
+**Skins** gives users the ability to change their current **Sublime Text** color scheme and theme with a single command. When a skin is selected, a certain set of settings is applied to Sublime Text. Skins can be provided in theme packages such as [Boxy Theme](https://github.com/ihodev/sublime-boxy) or they can be created by users themselves by saving the current settings to a new User Skin.
 
-![scr](screenshot.gif)
-
+![screenshot](https://cloud.githubusercontent.com/assets/16542113/25050093/aae66aa0-2145-11e7-9edd-acd019ac5610.gif)
 
 ### End Users
 
 #### General Usage
 
-Open the `command panel` with <kbd>Ctrl+Shift+P</kbd> and type `Select Skin`,
-`Save User Skin` or `Delete User Skin`.
+1. Open the Command Palette
+2. Type one of the following three commands:
+  * `UI: Select Skin`
+  * `UI: Save Skin`
+  * `UI: Delete Skin`.
 
+##### Keyboard shortcuts
 
-##### Windows / Linux
+To quickly open the `UI: Select Skin` menu use:
 
-Use <kbd>Ctrl+F12</kbd> to quickly open the `Select Skin` panel
-
-
-##### OS X
-
-Use <kbd>Super+F12</kbd> to quickly open the `Select Skin` panel
-
+* <kbd>Ctrl+F12</kbd> on Windows / Linux
+* <kbd>Super+F12</kbd> on macOS
 
 #### Settings
 
-By default only `color_scheme`, `theme`, `font_face` and `font_size` are stored
-by `Save User Skin`. If you want more settings to be stored, you can change the
-`skin-template` in the `Skins.sublime-settings`.
+By default the following settings are stored by `Save User Skin`
+
+* `color_scheme`
+* `theme`
+* `font_face`
+* `font_size`
+
+To edit the settings
+
+1. Open the Command Palette
+2. Type `Preferences: Skins Settings`
+
+The settings are stored in `Packages/User/Skins.sublime-settings`.
 
 **Example**
 
 ```javascript
 "skin-template":
 {
-    "Preferences": ["color_scheme","theme","font_face","font_size" /* ... */ ],
-    "SublimeLinter": {
-        /* structured settings are supported, too */
-        "user": ["error_color","gutter_theme","warning_color"]
+    // List of settings to load from / save to Preferences.sublime-settings
+    "Preferences":
+    [
+        "color_scheme",
+        "theme",
+        "font_face",
+        "font_size"
+    ],
+    // List of settings to load from / save to SublimeLinter.sublime-settings
+    "SublimeLinter":
+    {
+        "user":
+        [
+            "error_color",
+            "gutter_theme",
+            "warning_color"
+        ]
     }
-    /* add more packages here */
 }
 ```
-
 
 ### Theme Developers
 
 #### General
 
-`Skins` parses all `<AnyName>.skins` files in all packages. They are expected
-to store a collection of settings for sublime text and other packages. More
-than one skins file can exist in a package. The name of the file does not
-matter, but the names of the skins inside must be unique per package. The
-quick panel will show these names. The `Package` providing it is displayed in
-the second row as a kind of description.
-
+**Skins** parses all `*.skins` files in all packages. They are expected to store a collection of settings for sublime text and other packages. More than one skins file can exist in a package. The name of the file does not matter, but the names of the skins inside must be unique per package. The quick panel will show these names. The `Package` providing it is displayed in the second row as a kind of description.
 
 #### File Format
 
@@ -94,58 +103,40 @@ the second row as a kind of description.
 }
 ```
 
-Each child node of a skin represents a `<NodeName>.sublime-settings` file with
-all settings to write to. Therefore settings can be provided not only for
-`Sublime Text` but for any installed package such as `SublimeLinter`, too. A
-skin must at least contain the `Preferneces` node with `color_scheme` and
-`theme` settings to be valid but can include any other setting accepted by
-`Sublime Text`.
+Each child node of a skin represents the settings to be written to a `Packages/User/*.sublime-settings` file. Therefore settings can be provided not only for `Sublime Text` but for any installed package such as `SublimeLinter`. A skin must at least contain the `Preferneces` node with `color_scheme` and `theme` settings to be valid but may include any other setting accepted by `Sublime Text`.
 
-Settings with `Null` value, are deleted in the sublime-settings files.
-
+Settings with `null` value, are deleted in the sublime-settings files.
 
 #### Commands
 
-`Skins` exports the following `commands` to directly interact with all
-available skins. They can be used to create key bindings or command shortcuts
-to the most frequent used skins.
+`Skins` exports the following `commands` to directly interact with all available skins. They can be used to create key bindings or command shortcuts to the most frequent used skins.
 
-
-##### Set Skin
+##### Set Skins
 
 ```javascript
 "command": "set_skin",
 "args": { "package": "Skins", "name": "Monokai" }
 ```
 
+##### Save Skins
 
-##### Save User Skin
-
-The following example will directly save the current look and feel as 
-`Preset 01` in the `Packages/User/Saved Skins.skins` file.
+The following example will directly save the current look and feel as `Preset 01` in the `Packages/User/Saved Skins.skins` file.
 
 ```javascript
 "command": "save_user_skin",
 "args": { "name": "Preset 01" }
 ```
 
+##### Delete Skins
 
-##### Delete User Skin
-
-The following example will directly delete `Preset 01` from the 
-`Packages/User/Saved Skins.skins` file.
+The following example will directly delete `Preset 01` from the `Packages/User/Saved Skins.skins` file.
 
 ```javascript
 "command": "delete_user_skin",
 "args": { "name": "Preset 01" }
 ```
 
-
 ### Inspired by
 
-- [Theme Menu Switcher][themeswitcher] by chmln
-- [QuickThemes][quickthemes] by chrislongo
-
-[home]:          <https://github.com/deathaxe/sublime-skins>
-[themeswitcher]: <https://github.com/chmln/sublime-text-theme-switcher-menu>
-[quickthemes]:   <https://github.com/chrislongo/QuickThemes>
+* [`chmln/Theme Menu Switcher`](https://github.com/chmln/sublime-text-theme-switcher-menu)
+* [`chrislongo/QuickThemes`](https://github.com/chrislongo/QuickThemes)
