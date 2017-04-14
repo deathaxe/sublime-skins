@@ -135,7 +135,6 @@ class SetSkinCommand(sublime_plugin.WindowCommand):
         # Create the lists of all available skins.
         for skins_file in sublime.find_resources("*.skins"):
             package = skins_file.split("/", 2)[1]
-            print(package)
             for name, skin in decode_resource(skins_file).items():
                 if validate_skin(skin):
                     if initial_skin == "/".join((package, name)):
