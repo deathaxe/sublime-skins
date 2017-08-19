@@ -1,4 +1,5 @@
 # coding: utf-8
+import functools
 import os.path
 import sublime
 import sublime_plugin
@@ -97,6 +98,9 @@ class SetSkinCommand(sublime_plugin.WindowCommand):
             sublime.run_command("set_skin", {
                 "Package": "User", "name": "Preset 1"})
 
+        If 'package' is a string but name is not, a quick panel with all
+        skins provided by the package is displayed.
+
         If at least one of the args is not a string, a quick panel with all
         available skins is displayed.
 
@@ -109,17 +113,23 @@ class SetSkinCommand(sublime_plugin.WindowCommand):
         if not self.prefs:
             self.prefs = sublime.load_settings(PREF_USER)
 
-        # directly apply new skin
-        if isinstance(package, str) and isinstance(name, str):
-            for skins_file in sublime.find_resources("*.skins"):
-                if package in skins_file:
-                    skin = decode_resource(skins_file).get(name)
-                    if validate_skin(skin):
-                        return self.set_skin(package, name, skin)
-        # prepare and show quick panel asynchronous
-        sublime.set_timeout_async(self.show_quick_panel)
+        if isinstance(package, str):
+            if isinstance(name, str):
+                # directly apply new skin
+                for skins_file in sublime.find_resources("*.skins"):
+                    if package in skins_file:
+                        skin = decode_resource(skins_file).get(name)
+                        if validate_skin(skin):
+                            self.set_skin(package, name, skin)
+            else:
+                # show only skins provided by the package
+                sublime.set_timeout_async(
+                    functools.partial(self.show_quick_panel, filter=package))
+        else:
+            # prepare and show quick panel asynchronous
+            sublime.set_timeout_async(self.show_quick_panel)
 
-    def show_quick_panel(self):
+    def show_quick_panel(self, filter=None):
         """Display a quick panel with all available skins."""
         initial_skin = self.prefs.get("skin")
         initial_selected = -1
@@ -135,6 +145,8 @@ class SetSkinCommand(sublime_plugin.WindowCommand):
         # Create the lists of all available skins.
         for skins_file in sublime.find_resources("*.skins"):
             package = skins_file.split("/", 2)[1]
+            if filter and filter != package:
+                continue
             for name, skin in decode_resource(skins_file).items():
                 if validate_skin(skin):
                     if initial_skin == "/".join((package, name)):
