@@ -96,7 +96,7 @@ class SetSkinCommand(sublime_plugin.WindowCommand):
         the desired skin.
 
             sublime.run_command("set_skin", {
-                "Package": "User", "name": "Preset 1"})
+                "package": "User", "name": "Preset 1"})
 
         If 'package' is a string but name is not, a quick panel with all
         skins provided by the package is displayed.

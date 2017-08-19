@@ -103,7 +103,7 @@ The settings are stored in `Packages/User/Skins.sublime-settings`.
 }
 ```
 
-Each child node of a skin represents the settings to be written to a `Packages/User/*.sublime-settings` file. Therefore settings can be provided not only for `Sublime Text` but for any installed package such as `SublimeLinter`. A skin must at least contain the `Preferneces` node with `color_scheme` and `theme` settings to be valid but may include any other setting accepted by `Sublime Text`.
+Each child node of a skin represents the settings to be written to a `Packages/User/*.sublime-settings` file. Therefore settings can be provided not only for `Sublime Text` but for any installed package such as `SublimeLinter`. A skin must at least contain the `Preferences` node with `color_scheme` and `theme` settings to be valid but may include any other setting accepted by `Sublime Text`.
 
 Settings with `null` value, are deleted in the sublime-settings files.
 
@@ -113,10 +113,34 @@ Settings with `null` value, are deleted in the sublime-settings files.
 
 ##### Set Skins
 
+To open a quick panel with all available skins call:
+
+```javascript
+"command": "set_skin"
+"args": { }
+```
+
+To open a quick panel with all skins provided by a single package call:
+
+```javascript
+"command": "set_skin",
+"args": { "package": "Skins" }
+```
+
+To directly apply a certain predefined skin call:
+
 ```javascript
 "command": "set_skin",
 "args": { "package": "Skins", "name": "Monokai" }
 ```
+
+To apply a saved user skin call:
+
+```javascript
+"command": "set_skin",
+"args": { "package": "User", "name": "Preset 01" }
+```
+
 
 ##### Save Skins
 
