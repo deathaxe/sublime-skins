@@ -44,26 +44,26 @@ def validate_skin(skin_data):
         skin_data - JSON object with all settings to apply for the skin.
     """
     # check theme file
-    theme_name = os.path.basename(skin_data[PREF].get("theme"))
-    theme_ok = any(sublime.find_resources(theme_name))
+    theme_name = skin_data[PREF].get("theme")
+    theme_ok = theme_name and sublime.find_resources(theme_name)
     # check color scheme
-    color_schemes = []
     color_scheme_ok = False
     color_scheme_name = skin_data[PREF].get("color_scheme")
     if color_scheme_name:
         path, tail = os.path.split(color_scheme_name)
         name = tail.replace(" (SL)", "")
         color_schemes = sublime.find_resources(name)
-    if color_schemes:
-        # Try to find the exact path from *.skins file
-        resource_path = "/".join((path, name))
-        for found in color_schemes:
-            if found == resource_path:
+        if color_schemes:
+            # Try to find the exact path from *.skins file
+            resource_path = "/".join((path, name))
+            for found in color_schemes:
+                if found == resource_path:
+                    color_scheme_ok = True
+                    break
+            # Use the first found color scheme which matches 'name'
+            if not color_scheme_ok:
+                skin_data[PREF]["color_scheme"] = color_schemes[0]
                 color_scheme_ok = True
-        # Use the first found color scheme which matches 'name'
-        if not color_scheme_ok:
-            skin_data[PREF]["color_scheme"] = color_schemes[0]
-            color_scheme_ok = True
     return theme_ok or color_scheme_ok
 
 
