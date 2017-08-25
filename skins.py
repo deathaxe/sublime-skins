@@ -29,10 +29,11 @@ def decode_resource(name):
     return {}
 
 
-def validate_skin(skin_data):
+def validate_skin(skin_data, fallback_theme=None, fallback_colors=None):
     """Check skin integrity and return the boolean result.
 
-    For a skin to be valid at least 'color_scheme' and 'theme' must exist.
+    For a skin to be valid at least 'color_scheme' or 'theme' must exist.
+    If one of both values is invalid, it may be replaced with a fallback value.
     Otherwise SublimeText's behavior when loading the skin is unpredictable.
 
     SublimeLinter automatically creates and applies patched color schemes if
@@ -41,7 +42,14 @@ def validate_skin(skin_data):
     directly so SublimeLinter can do his job correctly.
 
     Arguments:
-        skin_data - JSON object with all settings to apply for the skin.
+        skin_data (dict):
+            JSON object with all settings to apply for the skin.
+        fallback_theme (string):
+            A valid theme name to inject into skin_data, if skin_data does not
+            contain a valid one.
+        fallback_colors (string):
+            A valid color_scheme path to inject into skin_data, if skin_data
+            does not contain a valid one.
     """
     # check theme file
     theme_name = skin_data[PREF].get("theme")
@@ -64,7 +72,13 @@ def validate_skin(skin_data):
             if not color_scheme_ok:
                 skin_data[PREF]["color_scheme"] = color_schemes[0]
                 color_scheme_ok = True
-    return theme_ok or color_scheme_ok
+    valid = theme_ok or color_scheme_ok
+    if valid:
+        if fallback_theme and not theme_ok:
+            skin_data[PREF]["theme"] = fallback_theme
+        if fallback_colors and not color_scheme_ok:
+            skin_data[PREF]["color_scheme"] = fallback_colors
+    return valid
 
 
 def load_user_skins():
@@ -136,6 +150,8 @@ class SetSkinCommand(sublime_plugin.WindowCommand):
 
     def show_quick_panel(self, filter=None):
         """Display a quick panel with all available skins."""
+        initial_color = self.prefs.get("color_scheme")
+        initial_theme = self.prefs.get("theme")
         initial_skin = self.prefs.get("skin")
         initial_selected = -1
         # a dictionary with all preferences to restore on abort
@@ -153,7 +169,7 @@ class SetSkinCommand(sublime_plugin.WindowCommand):
             if filter and filter != package:
                 continue
             for name, skin in decode_resource(skins_file).items():
-                if validate_skin(skin):
+                if validate_skin(skin, initial_theme, initial_color):
                     if initial_skin == "/".join((package, name)):
                         initial_selected = len(items)
                     items.append([icon + name, package])
