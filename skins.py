@@ -217,8 +217,10 @@ class SetSkinCommand(sublime_plugin.WindowCommand):
                 pkgs = sublime.load_settings(pkg_name + PREF_EXT)
                 for key, val in pkg_prefs.items():
                     if isinstance(val, dict):
-                        pkgs.set(key, pkgs.get(key).update(val))
-                    elif val:
+                        new = pkgs.get(key)
+                        new.update(val)
+                        val = new
+                    if val:
                         pkgs.set(key, val)
                     else:
                         pkgs.erase(key)
