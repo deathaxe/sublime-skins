@@ -29,10 +29,11 @@ def decode_resource(name):
     return {}
 
 
-def validate_skin(skin_data):
+def validate_skin(skin_data, fallback_theme=None, fallback_colors=None):
     """Check skin integrity and return the boolean result.
 
-    For a skin to be valid at least 'color_scheme' and 'theme' must exist.
+    For a skin to be valid at least 'color_scheme' or 'theme' must exist.
+    If one of both values is invalid, it may be replaced with a fallback value.
     Otherwise SublimeText's behavior when loading the skin is unpredictable.
 
     SublimeLinter automatically creates and applies patched color schemes if
@@ -41,25 +42,43 @@ def validate_skin(skin_data):
     directly so SublimeLinter can do his job correctly.
 
     Arguments:
-        skin_data - JSON object with all settings to apply for the skin.
+        skin_data (dict):
+            JSON object with all settings to apply for the skin.
+        fallback_theme (string):
+            A valid theme name to inject into skin_data, if skin_data does not
+            contain a valid one.
+        fallback_colors (string):
+            A valid color_scheme path to inject into skin_data, if skin_data
+            does not contain a valid one.
     """
     # check theme file
-    theme_name = os.path.basename(skin_data[PREF]["theme"])
-    theme_ok = any(sublime.find_resources(theme_name))
+    theme_name = skin_data[PREF].get("theme")
+    theme_ok = theme_name and sublime.find_resources(theme_name)
     # check color scheme
-    path, tail = os.path.split(skin_data[PREF]["color_scheme"])
-    name = tail.replace(" (SL)", "")
-    color_schemes = sublime.find_resources(name)
-    if not color_schemes:
-        return False
-    # Try to find the exact path from *.skins file
-    resource_path = "/".join((path, name))
-    for found in color_schemes:
-        if found == resource_path:
-            return theme_ok
-    # Use the first found color scheme which matches 'name'
-    skin_data[PREF]["color_scheme"] = color_schemes[0]
-    return theme_ok
+    color_scheme_ok = False
+    color_scheme_name = skin_data[PREF].get("color_scheme")
+    if color_scheme_name:
+        path, tail = os.path.split(color_scheme_name)
+        name = tail.replace(" (SL)", "")
+        color_schemes = sublime.find_resources(name)
+        if color_schemes:
+            # Try to find the exact path from *.skins file
+            resource_path = "/".join((path, name))
+            for found in color_schemes:
+                if found == resource_path:
+                    color_scheme_ok = True
+                    break
+            # Use the first found color scheme which matches 'name'
+            if not color_scheme_ok:
+                skin_data[PREF]["color_scheme"] = color_schemes[0]
+                color_scheme_ok = True
+    valid = theme_ok or color_scheme_ok
+    if valid:
+        if fallback_theme and not theme_ok:
+            skin_data[PREF]["theme"] = fallback_theme
+        if fallback_colors and not color_scheme_ok:
+            skin_data[PREF]["color_scheme"] = fallback_colors
+    return valid
 
 
 def load_user_skins():
@@ -131,6 +150,8 @@ class SetSkinCommand(sublime_plugin.WindowCommand):
 
     def show_quick_panel(self, filter=None):
         """Display a quick panel with all available skins."""
+        initial_color = self.prefs.get("color_scheme")
+        initial_theme = self.prefs.get("theme")
         initial_skin = self.prefs.get("skin")
         initial_selected = -1
         # a dictionary with all preferences to restore on abort
@@ -148,7 +169,7 @@ class SetSkinCommand(sublime_plugin.WindowCommand):
             if filter and filter != package:
                 continue
             for name, skin in decode_resource(skins_file).items():
-                if validate_skin(skin):
+                if validate_skin(skin, initial_theme, initial_color):
                     if initial_skin == "/".join((package, name)):
                         initial_selected = len(items)
                     items.append([icon + name, package])
