@@ -103,7 +103,7 @@ The settings are stored in `Packages/User/Skins.sublime-settings`.
 }
 ```
 
-Each child node of a skin represents the settings to be written to a `Packages/User/*.sublime-settings` file. Therefore settings can be provided not only for `Sublime Text` but for any installed package such as `SublimeLinter`. A skin must at least contain the `Preferences` node with `color_scheme` and `theme` settings to be valid but may include any other setting accepted by `Sublime Text`.
+Each child node of a skin represents the settings to be written to a `Packages/User/*.sublime-settings` file. Therefore settings can be provided not only for `Sublime Text` but for any installed package such as `SublimeLinter`. A skin must at least contain the `Preferences` node with `color_scheme` or `theme` settings to be valid but may include any other setting accepted by `Sublime Text`.
 
 Settings with `null` value, are deleted in the sublime-settings files.
 
