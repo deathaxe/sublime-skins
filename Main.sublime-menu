@@ -4,6 +4,8 @@
 		"children":
 		[
 			{
+				"caption": "Package Settings",
+				"mnemonic": "P",
 				"id": "package-settings",
 				"children":
 				[
