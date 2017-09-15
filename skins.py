@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-import functools
 import os.path
 import sublime
 import sublime_plugin
@@ -142,11 +141,10 @@ class SetSkinCommand(sublime_plugin.WindowCommand):
                             self.set_skin(package, name, skin)
             else:
                 # show only skins provided by the package
-                sublime.set_timeout_async(
-                    functools.partial(self.show_quick_panel, filter=package))
+                self.show_quick_panel(filter=package)
         else:
             # prepare and show quick panel asynchronous
-            sublime.set_timeout_async(self.show_quick_panel)
+            self.show_quick_panel()
 
     def show_quick_panel(self, filter=None):
         """Display a quick panel with all available skins."""
