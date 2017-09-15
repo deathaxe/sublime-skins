@@ -1,4 +1,4 @@
-# coding: utf-8
+# -*- coding: utf-8 -*-
 import functools
 import os.path
 import sublime
@@ -246,7 +246,7 @@ class SetSkinCommand(sublime_plugin.WindowCommand):
                     else:
                         pkgs.erase(key)
                 sublime.save_settings(pkg_name + PREF_EXT)
-            except:
+            except Exception:
                 pass
 
 
