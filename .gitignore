@@ -1,0 +1,17 @@
+# Cache folders
+.cache/
+.mypy_cache/
+__pycache__/
+var/
+
+# Cache files
+*.pyc
+
+# Unit test / coverage reports
+.coverage
+.tox
+nosetests.xml
+
+# Sublime Text
+*.sublime-workspace
+*.vcs-cache
