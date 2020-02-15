@@ -42,7 +42,7 @@ The settings are stored in `Packages/User/Skins.sublime-settings`.
 
 **Example**
 
-```javascript
+```json
 "skin-template":
 {
     // List of settings to load from / save to Preferences.sublime-settings
@@ -74,7 +74,7 @@ The settings are stored in `Packages/User/Skins.sublime-settings`.
 
 #### File Format
 
-```javascript
+```json
 {
     // skin
     "Boxy Tomorrow (Green)": {
@@ -115,28 +115,28 @@ Settings with `null` value, are deleted in the sublime-settings files.
 
 To open a quick panel with all available skins call:
 
-```javascript
+```json
 "command": "set_skin"
 "args": { }
 ```
 
 To open a quick panel with all skins provided by a single package call:
 
-```javascript
+```json
 "command": "set_skin",
 "args": { "package": "Skins" }
 ```
 
 To directly apply a certain predefined skin call:
 
-```javascript
+```json
 "command": "set_skin",
 "args": { "package": "Skins", "name": "Monokai" }
 ```
 
 To apply a saved user skin call:
 
-```javascript
+```json
 "command": "set_skin",
 "args": { "package": "User", "name": "Preset 01" }
 ```
@@ -146,7 +146,7 @@ To apply a saved user skin call:
 
 The following example will directly save the current look and feel as `Preset 01` in the `Packages/User/Saved Skins.skins` file.
 
-```javascript
+```json
 "command": "save_user_skin",
 "args": { "name": "Preset 01" }
 ```
@@ -155,7 +155,7 @@ The following example will directly save the current look and feel as `Preset 01
 
 The following example will directly delete `Preset 01` from the `Packages/User/Saved Skins.skins` file.
 
-```javascript
+```json
 "command": "delete_user_skin",
 "args": { "name": "Preset 01" }
 ```
